@@ -29,3 +29,22 @@
     margin: 10px;
   }
 }
+
+#product_form {
+  gap: 10px;
+  #baseinput, #typeinput>div {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+    #labels {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    #inputs {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+  }
+}
