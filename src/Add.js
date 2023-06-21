@@ -3,12 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import axios from "axios";
 
 export default function Add() {
+    const url = "http://localhost:8000/list.php";
     const navigate = useNavigate();
     function Validate() {
         setPleaseadd(null)
         setPleaseformat(null)
         setChangesku(null)
-        FetchAPI()
+        setChangesku(false)
         function checkifnum(num) {
             if (num !== "" && /^\d+$/.test(num) === false) {
                 return true
@@ -31,15 +32,12 @@ export default function Add() {
         else {
             setPleaseadd(false)
         }
-        if (Boolean(sku.match(/^[A-Za-z0-9]*$/)) === false || checkifnum(price) || checkifnum(height) || checkifnum(width) || checkifnum(length) || checkifnum(weight)) {
+        if (Boolean(sku.match(/^[A-Za-z0-9]*$/)) === false ||  checkifnum(price) || checkifnum(height) || checkifnum(width) || checkifnum(length) || checkifnum(weight)) {
             setPleaseformat(true)
         }
         else {
             setPleaseformat(false)
         }
-        // if (pleaseadd === false && pleaseformat === false && changesku === false) {
-        //     navigate(`/`)
-        // } 
     }
     const [sku, setSku] = useState("")
     const [name, setName] = useState("")
@@ -65,10 +63,23 @@ export default function Add() {
         setLength("")
         setWeight("")
     }, [type])
+    useEffect(() => {
     if (pleaseadd === false && pleaseformat === false && changesku === false) {
+        const form = new FormData(); 
+        form.append('type', type);
+        form.append('sku', sku);        
+        form.append('name', name);
+        form.append('price', price);
+        form.append('size', mb);
+        form.append('height', height);
+        form.append('width', width);
+        form.append('length', length);
+        form.append('weight', weight);
+        console.log(form)
+        axios.post(url, form)
         navigate(`/`)
     }
-    const url = "http://localhost:8000/list.php";
+}, [pleaseadd, pleaseformat, changesku])
     async function FetchAPI() {
         const res = await axios.get(url);
         setData(res.data)
@@ -80,7 +91,7 @@ export default function Add() {
                 <h1>Product Add</h1>
                 <div id="addremove">
                     {/* <Link to={'/add-product'}>ADD</Link> */}
-                    <button onClick={() => Validate()} className='.delete-checkbox'>Save</button>
+                    <button onClick={async () => {FetchAPI(); Validate()}} className='.delete-checkbox'>Save</button>
                 </div>
             </div>
             <hr></hr>
@@ -92,9 +103,9 @@ export default function Add() {
                         <label for="price">Price</label>
                     </div>
                     <div id="inputs">
-                        <input maxlength="10" onChange={(e) => setSku(e.target.value)} id="sku"></input>
-                        <input maxlength="20" onChange={(e) => setName(e.target.value)} id="name"></input>
-                        <input maxlength="10" onChange={(e) => setPrice(e.target.value)} id="price"></input>
+                        <input maxLength="10" onChange={(e) => setSku(e.target.value)} id="sku"></input>
+                        <input maxLength="20" onChange={(e) => setName(e.target.value)} id="name"></input>
+                        <input maxLength="10" onChange={(e) => setPrice(e.target.value)} id="price"></input>
                     </div>
                 </div>
                 <br></br>

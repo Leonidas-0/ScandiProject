@@ -3,6 +3,7 @@ import axios from "axios";
 import { Link } from 'react-router-dom';
 export default function Home() {
     const [data, setData] = useState("");
+
     useEffect(() => {
         FetchAPI()
     },
@@ -27,10 +28,10 @@ export default function Home() {
                 <div id="products">
                     <div>
                         <div>
-                            {data[0].sku}
+                            {data[1].sku}
                         </div>
                         <div>
-                            {data[0].Name}
+                            {data[1].Name}
                         </div>
                     </div>
                 </div>
