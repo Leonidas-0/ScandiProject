@@ -40,10 +40,10 @@ class Product
 class DVD extends Product
 {
   private $size;
-  // function set_size($size)
-  // {
-  //   $this->size = $size;
-  // }
+  function set_size($size)
+  {
+    $this->size = $size;
+  }
   function get_size()
   {
     return $this->size;
@@ -65,13 +65,6 @@ class Furniture extends Product
   private $height;
   private $width;
   private $length;
-  // function __construct($sku, $name, $price, $height, $width, $length)
-  // {
-  //   parent::__construct($sku, $name, $price);
-  //   $this->height = $height;
-  //   $this->width = $width;
-  //   $this->length = $length;
-  // }
   function set_height($height) {
     $this->height = $height;
   }
