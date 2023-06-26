@@ -28,10 +28,10 @@ export default function Home() {
                 <div id="products">
                     <div>
                         <div>
-                            {data[1].sku}
+                            {data[1]}
                         </div>
                         <div>
-                            {data[1].Name}
+                            {data[1]}
                         </div>
                     </div>
                 </div>

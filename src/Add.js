@@ -75,7 +75,6 @@ export default function Add() {
         form.append('width', width);
         form.append('length', length);
         form.append('weight', weight);
-        console.log(form)
         axios.post(url, form)
         navigate(`/`)
     }
