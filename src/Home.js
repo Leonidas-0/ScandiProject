@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { Button } from '@mui/material';
 export default function Home() {
     const [data, setData] = useState("");
+    console.log(data)
 
     useEffect(() => {
         FetchAPI()
@@ -25,13 +26,9 @@ export default function Home() {
                 </div>
             </div>
             <hr></hr>
-            {data[0] && (
+            {data && (
                 <div id="products">
-                    <div>
-                        <div>
-                            {data[0].sku}
-                        </div>
-                    </div>
+                    {data.map(product => <p>{product.sku}</p>)}
                 </div>
             )}
         </div>
