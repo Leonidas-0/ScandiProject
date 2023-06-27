@@ -1,5 +1,5 @@
 <?php
-header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Origin: http://localhost:3000');
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
 $servername = "localhost";
 $username = "root";
@@ -11,12 +11,6 @@ class Product
   private $name;
   private $price;
 
-  // function __construct($sku, $name, $price)
-  // {
-  //   $this->sku = $sku;
-  //   $this->name = $name;
-  //   $this->price = $price;
-  // }
   function set_sku($sku) {
     $this->sku = $sku;
   }
@@ -87,6 +81,7 @@ class Furniture extends Product
     return $this->length;
   }
 }
+$method = $_SERVER['REQUEST_METHOD'];
 
 switch ($method) {
   case "GET":
@@ -98,6 +93,8 @@ switch ($method) {
     echo json_encode($data);
     break;
   case "POST":
+    $type = $_POST['type'];
+    $product=new $type();
     $typevalidator = [
       'dvd' =>  ['size'],
       'book' => ['weight'],
@@ -105,15 +102,19 @@ switch ($method) {
     ];
     $fieldvalues = array();
     $fieldnames = array();
-    $type = $_POST['type'];
     foreach ($typevalidator[$type] as $field) {
-      $product->set_. '' .$field($_POST[$field]);
-      $fieldname = $product->get_. '' .$field;
-      array_push($fieldvalues, $field);
-      array_push($fieldnames, $fieldname);
+      $setter="set_$field";
+      $getter="get_$field";
+      $product->$setter($_POST[$field]);
+      $fieldvalue = $product->$getter();
+      array_push($fieldvalues, $fieldvalue);
+      array_push($fieldnames, $field);
     }
     $fieldvalues = implode(',', $fieldvalues);
     $fieldnames = implode(',', $fieldnames);
+    $product->set_sku($_POST['sku']);
+    $product->set_name($_POST['name']);
+    $product->set_price($_POST['price']);
     $sku = $product->get_sku();
     $name = $product->get_name();
     $price = $product->get_price();

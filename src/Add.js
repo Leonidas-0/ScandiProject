@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from "axios";
-
+import TextField from '@mui/material/TextField';
+import { MenuItem, Button } from '@mui/material';
 export default function Add() {
     const url = "http://localhost:8000/list.php";
     const navigate = useNavigate();
@@ -9,7 +10,8 @@ export default function Add() {
         setPleaseadd(null)
         setPleaseformat(null)
         setChangesku(null)
-        setChangesku(false)
+        setData(null)
+        console.log(data)
         function checkifnum(num) {
             if (num !== "" && /^\d+$/.test(num) === false) {
                 return true
@@ -18,12 +20,17 @@ export default function Add() {
                 return false
             }
         }
-        for (let i = 0; i < data.length; i++) {
-            if (data[i].sku === sku) {
-                setChangesku(true)
-            }
-            else {
-                setChangesku(false)
+        if (data.length === 0) {
+            setChangesku(false)
+        }
+        else {
+            for (let i = 0; i < data.length; i++) {
+                if (data[i].sku === sku) {
+                    setChangesku(true)
+                }
+                else {
+                    setChangesku(false)
+                }
             }
         }
         if ((sku === "" || name === "" || price === "") || (type === "dvd" && mb === "") || (type === 'book' && weight === "") || ((type === 'furniture') && (height === '' || width === "" || length === ""))) {
@@ -32,12 +39,13 @@ export default function Add() {
         else {
             setPleaseadd(false)
         }
-        if (Boolean(sku.match(/^[A-Za-z0-9]*$/)) === false ||  checkifnum(price) || checkifnum(height) || checkifnum(width) || checkifnum(length) || checkifnum(weight)) {
+        if (Boolean(sku.match(/^[A-Za-z0-9]*$/)) === false || checkifnum(price) || checkifnum(height) || checkifnum(width) || checkifnum(length) || checkifnum(weight) || checkifnum(mb)) {
             setPleaseformat(true)
         }
         else {
             setPleaseformat(false)
         }
+        return false;
     }
     const [sku, setSku] = useState("")
     const [name, setName] = useState("")
@@ -52,7 +60,15 @@ export default function Add() {
     const [pleaseformat, setPleaseformat] = useState(null)
     const [data, setData] = useState("");
     const [changesku, setChangesku] = useState(null);
-
+    async function FetchAPI() {
+        const res = await axios.get(url);
+        setData(res.data)
+        return false
+    };
+    useEffect(() => {
+        FetchAPI()
+    },
+        [data === null])
     useEffect(() => {
         setPleaseadd(null)
         setPleaseformat(null)
@@ -64,89 +80,101 @@ export default function Add() {
         setWeight("")
     }, [type])
     useEffect(() => {
-    if (pleaseadd === false && pleaseformat === false && changesku === false) {
-        const form = new FormData(); 
-        form.append('type', type);
-        form.append('sku', sku);        
-        form.append('name', name);
-        form.append('price', price);
-        form.append('size', mb);
-        form.append('height', height);
-        form.append('width', width);
-        form.append('length', length);
-        form.append('weight', weight);
-        axios.post(url, form)
-        navigate(`/`)
-    }
-}, [pleaseadd, pleaseformat, changesku])
-    async function FetchAPI() {
-        const res = await axios.get(url);
-        setData(res.data)
-        return false
-    };
+        if (pleaseadd === false && pleaseformat === false && changesku === false) {
+            const form = new FormData();
+            form.append('type', type);
+            form.append('sku', sku);
+            form.append('name', name);
+            form.append('price', price);
+            form.append('size', mb);
+            form.append('height', height);
+            form.append('width', width);
+            form.append('length', length);
+            form.append('weight', weight);
+            axios.post(url, form)
+            navigate(`/`)
+        }
+    }, [pleaseadd, pleaseformat, changesku])
     return (
         <div>
             <div id="header">
                 <h1>Product Add</h1>
                 <div id="addremove">
                     {/* <Link to={'/add-product'}>ADD</Link> */}
-                    <button onClick={async () => {FetchAPI(); Validate()}} className='.delete-checkbox'>Save</button>
+                    <Button onClick={Validate} variant="outlined">Save</Button>
                 </div>
             </div>
             <hr></hr>
             <div id="product_form">
                 <div id="baseinput">
-                    <div id="labels">
-                        <label for="sku">SKU</label>
-                        <label for="name">Name</label>
-                        <label for="price">Price</label>
-                    </div>
                     <div id="inputs">
-                        <input maxLength="10" onChange={(e) => setSku(e.target.value)} id="sku"></input>
-                        <input maxLength="20" onChange={(e) => setName(e.target.value)} id="name"></input>
-                        <input maxLength="10" onChange={(e) => setPrice(e.target.value)} id="price"></input>
+                        <div className="input">
+                            SKU
+                            <TextField onChange={(e) => setSku(e.target.value)} maxLength="10" id="sku" label="SKU" variant="outlined" />
+                        </div>
+                        <div className="input">
+                            Name
+                            <TextField onChange={(e) => setName(e.target.value)} maxLength="20" id="name" label="Name" variant="outlined" />
+                        </div>
+                        <div className="input">
+                            Price($)
+                            <TextField onChange={(e) => setPrice(e.target.value)} maxLength="10" id="price" label="Price" variant="outlined" />
+                        </div>
                     </div>
                 </div>
                 <br></br>
-                <select onChange={(e) => setType(e.target.value)} id="productType" name="Type Switcher">
-                    <option value="dvd">DVD</option>
-                    <option value="book">Book</option>
-                    <option value="furniture">Furniture</option>
-                </select>
+                <TextField onChange={(e) => setType(e.target.value)}
+                    id="standard-select-currency"
+                    select
+                    label="Type"
+                    defaultValue={"dvd"}
+                    helperText="Please select the type of your product"
+                    variant="standard"
+                >
+                    <MenuItem value={'dvd'}>
+                        DVD
+                    </MenuItem>
+                    <MenuItem value={'book'}>
+                        Book
+                    </MenuItem>
+                    <MenuItem value={'furniture'}>
+                        Furniture
+                    </MenuItem>
+                </TextField>
                 <br></br>
                 <br></br>
                 <div id="typeinput">
                     {type === "dvd" &&
                         <div id="DVD">
-                            <div id="labels">
-                                <label for="size">Size(MB)</label>
-                            </div>
-                            <div id="inputs">
-                                <input onChange={(e) => setMb(e.target.value)} id="weight"></input>
+                            <div className="input">
+                            Size(MB)
+                                <TextField onChange={(e) => setMb(e.target.value)} id="size" label="Size" variant="outlined" />
                             </div>
                         </div>
                     }
                     {type === "furniture" &&
                         <div id="Furniture">
-                            <div id="labels">
-                                <label for="height">Height(CM)</label>
-                                <label for="width">Width(CM)</label>
-                                <label for="length">Length(CM)</label>
-                            </div>
                             <div id="inputs">
-                                <input onChange={(e) => setHeight(e.target.value)} id="height"></input>
-                                <input onChange={(e) => setWidth(e.target.value)} id="width"></input>
-                                <input onChange={(e) => setLength(e.target.value)} id="length"></input>
+                                <div className="input">
+                                    Height
+                                    <TextField onChange={(e) => setHeight(e.target.value)} maxLength="10" id="sku" label="SKU" variant="outlined" />
+                                </div>
+                                <div className="input">
+                                    Width
+                                    <TextField onChange={(e) => setWidth(e.target.value)} maxLength="20" id="name" label="Name" variant="outlined" />
+                                </div>
+                                <div className="input">
+                                    Length
+                                    <TextField onChange={(e) => setLength(e.target.value)} maxLength="10" id="price" label="Price" variant="outlined" />
+                                </div>
                             </div>
                         </div>
                     }
                     {type === "book" &&
                         <div id="Book">
-                            <div id="labels">
-                                <label for="weight">Weight(KG)</label>
-                            </div>
-                            <div id="inputs">
-                                <input onChange={(e) => setWeight(e.target.value)} id="weight"></input>
+                            <div className="input">
+                            Weight(KG)
+                                <TextField onChange={(e) => setWeight(e.target.value)} id="weight" label="Weight" variant="outlined" />
                             </div>
                         </div>
                     }
