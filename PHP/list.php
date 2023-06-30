@@ -1,7 +1,7 @@
 <?php
-header('Access-Control-Allow-Origin: http://localhost:3000');
-header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
-$servername = "localhost";
+header('Access-Control-Allow-Origin: *');
+header("Access-Control-Allow-Methods: PUT, GET, POST, DELETE");
+$servername = "127.0.0.1";
 $username = "root";
 $password = "";
 $conn = new mysqli($servername, $username, $password, 'commerce');
@@ -10,28 +10,23 @@ class Product
   private $sku;
   private $name;
   private $price;
-
-  function set_sku($sku)
-  {
+  function __construct($sku, $name, $price) {
     $this->sku = $sku;
+    $this->name = $name;
+    $this->price = $price;
   }
-  function get_sku()
+
+  function sku()
   {
     return $this->sku;
   }
-  function set_name($name)
-  {
-    $this->name = $name;
-  }
-  function get_name()
+
+  function name()
   {
     return $this->name;
   }
-  function set_price($price)
-  {
-    $this->price = $price;
-  }
-  function get_price()
+
+  function price()
   {
     return $this->price;
   }
@@ -40,11 +35,13 @@ class Product
 class DVD extends Product
 {
   private $size;
-  function set_size($size)
-  {
+  public function __construct($sku, $name, $price, $size)
+	{
+		parent::__construct($sku, $name, $price);
     $this->size = $size;
-  }
-  function get_size()
+	}
+
+  function size()
   {
     return $this->size;
   }
@@ -52,96 +49,117 @@ class DVD extends Product
 class Book extends Product
 {
   private $weight;
-  function set_weight($weight)
-  {
+  public function __construct($sku, $name, $price, $weight)
+	{
+		parent::__construct($sku, $name, $price);
     $this->weight = $weight;
-  }
-  function get_weight()
+	}
+
+  function weight()
   {
     return $this->weight;
   }
 }
 class Furniture extends Product
 {
+	public function __construct($sku, $name, $price, $width, $height, $length)
+	{
+		parent::__construct($sku, $name, $price,);
+		$this->width = $width;
+    $this->height = $height;
+    $this->length = $length;
+	}
   private $height;
   private $width;
   private $length;
-  function set_height($height)
-  {
-    $this->height = $height;
-  }
-  function get_height()
+
+  function height()
   {
     return $this->height;
   }
-  function set_width($width)
-  {
-    $this->width = $width;
-  }
-  function get_width()
+  function width()
   {
     return $this->width;
   }
-  function set_length($length)
-  {
-    $this->length = $length;
-  }
-  function get_length()
+  function length()
   {
     return $this->length;
   }
 }
 
-class TypeValidator
-{
-  public $dvd;
-  public $book;
-  public $furniture;
-}
+
 
 $method = $_SERVER['REQUEST_METHOD'];
-
+function console_log($data)
+{
+  $output = $data;
+  if (is_array($output))
+    $output = implode(',', $output);
+  echo "<script>console.log('Debug Objects: " . $output . "' );</script>";
+}
+function parseInput()
+{
+  $data = file_get_contents("php://input");
+  parse_str($data, $result);
+  return $result;
+}
+class TypeValidator {
+public $dvd=['size']; 
+public $book=['weight'];
+public $furniture=['width', 'height', 'length'];
+}
+function repeat($value, $proplength)
+{ 
+  $array=array(str_repeat("$value", count($proplength)));
+  return implode(",", $array);
+}
 switch ($method) {
   case "GET":
-    $query = "SELECT sku FROM baseinfos INNER JOIN dvds ON baseinfos.sku=dvds.baseinfo 
-    UNION SELECT sku FROM baseinfos INNER JOIN furnitures ON baseinfos.sku=furnitures.baseinfo
-    UNION SELECT sku FROM baseinfos INNER JOIN books ON baseinfos.sku=books.baseinfo ORDER BY sku;";
+    $query = "SELECT * FROM dvds INNER JOIN baseinfos ON dvds.baseinfo=baseinfos.sku;";
+    $query .= "SELECT * FROM furnitures INNER JOIN baseinfos ON furnitures.baseinfo=baseinfos.sku;";
+    $query .= "SELECT * FROM books INNER JOIN baseinfos ON books.baseinfo=baseinfos.sku;";
     $data = [];
-    $result = $conn->query($query);
-    while ($row = $result->fetch_assoc()) {
-      $data[] = $row;
+    if ($conn->multi_query($query)) {
+      do {
+        if ($result = $conn->store_result()) {
+          while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
+          }
+          $result->free_result();
+        }
+      } while ($conn->next_result());
     }
     echo json_encode($data);
     break;
+  case "DELETE":
+    $values = json_decode(file_get_contents('php://input'), true);
+    foreach ($values as $value) {
+      $stmt = $conn->prepare("DELETE FROM baseinfos WHERE sku = '$value'");
+      $stmt->execute();
+    }
+    break;
   case "POST":
     $type = $_POST['type'];
-    $product = new $type();
-    $typevalidator= new TypeValidator();
-    $typevalidator->dvd = ['size'];
-    $typevalidator->book = ['weight'];
-    $typevalidator->furniture = ['height', 'width', 'length'];
-    $chosen_property = $typevalidator->$type;
-    $property_values = array();
-    $property_names = array();
-    foreach ($chosen_property as $property_name => $value) {
-      $setter = "set_$value";
-      $getter = "get_$value";
-      $product->$setter($_POST[$value]);
-      $property_getter = $product->$getter();
-      array_push($property_values, $property_getter);
-      array_push($property_names, $value);
+    $validator=new TypeValidator();
+    $typefields=[];
+    $typevalues=[];
+    foreach($validator->$type as $field) {
+      array_push($typevalues,  $_POST[$field]);
+      array_push($typefields, $field);
     }
-    $property_values = implode(',', $property_values);
-    $property_names = implode(',', $property_names);
-    $product->set_sku($_POST['sku']);
-    $product->set_name($_POST['name']);
-    $product->set_price($_POST['price']);
-    $sku = $product->get_sku();
-    $name = $product->get_name();
-    $price = $product->get_price();
-    $insertbase = $conn->prepare("INSERT INTO baseinfos (sku,name,price) VALUES ('$sku', '$name', '$price')");
+    $chosen_fields = implode(',', $typefields);
+    $chosen_values = implode(',', $typevalues);
+    $product=new $type($_POST['sku'], $_POST['name'], $_POST['price'], $chosen_values);
+    $sku = $product->sku();
+    $name = $product->name();
+    $price = $product->price();
+    $insertbase = $conn->prepare("INSERT INTO baseinfos (sku,name,price) VALUES (?, ?, ?)");
+    $insertbase->bind_param("sss", $sku, $name, $price);
     $insertbase->execute();
-    $inserttype = $conn->prepare("INSERT INTO {$type}s (baseinfo, $property_names) values((SELECT sku FROM baseinfos WHERE sku='$sku'), $property_values);");
+    $questionmarks = repeat('?', $typefields);
+    $inserttype = $conn->prepare("INSERT INTO {$type}s (baseinfo, $chosen_fields) VALUES ((SELECT sku FROM baseinfos WHERE sku='$sku'), ($questionmarks));");
+    $inserttype->bind_param('s', $sku);
+    $inserttype->bind_param(repeat('s', $typefields), $chosen_values);
     $inserttype->execute();
     break;
 }

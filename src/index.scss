@@ -7,13 +7,11 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-// code {
-//   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-//     monospace;
-// }
-
 #products {
   margin: 10px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-gap: 5px;
 }
 
 #header {
@@ -36,11 +34,6 @@ body {
     display: flex;
     flex-direction: row;
     gap: 5px;
-    // #labels {
-    //   display: flex;
-    //   flex-direction: column;
-    //   gap: 10px;
-    // }
     #inputs {
       display: flex;
       flex-direction: column;

@@ -11,7 +11,6 @@ export default function Add() {
         setPleaseformat(null)
         setChangesku(null)
         setData(null)
-        console.log(data)
         function checkifnum(num) {
             if (num !== "" && /^\d+$/.test(num) === false) {
                 return true
@@ -27,9 +26,10 @@ export default function Add() {
             for (let i = 0; i < data.length; i++) {
                 if (data[i].sku === sku) {
                     setChangesku(true)
+                    break;
                 }
-                else {
-                    setChangesku(false)
+                else if (i + 1 === data.length) {
+                    setChangesku(false);
                 }
             }
         }
@@ -147,7 +147,7 @@ export default function Add() {
                     {type === "dvd" &&
                         <div id="DVD">
                             <div className="input">
-                            Size(MB)
+                                Size(MB)
                                 <TextField onChange={(e) => setMb(e.target.value)} id="size" label="Size" variant="outlined" />
                             </div>
                         </div>
@@ -173,7 +173,7 @@ export default function Add() {
                     {type === "book" &&
                         <div id="Book">
                             <div className="input">
-                            Weight(KG)
+                                Weight(KG)
                                 <TextField onChange={(e) => setWeight(e.target.value)} id="weight" label="Weight" variant="outlined" />
                             </div>
                         </div>
