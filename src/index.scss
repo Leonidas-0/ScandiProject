@@ -12,6 +12,7 @@ body {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
   grid-gap: 5px;
+  white-space: nowrap;
 }
 
 #header {
@@ -46,4 +47,12 @@ body {
       justify-content: space-between;
     }
   }
+}
+
+input[type='checkbox'] {
+  position: absolute;
+  margin: 20px;
+  transform : scale(1.5);
+  top:0;
+  left:0
 }

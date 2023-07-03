@@ -2,15 +2,16 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from "axios";
 import TextField from '@mui/material/TextField';
-import { MenuItem, Button } from '@mui/material';
+import { MenuItem, Button, NativeSelect, FormControl } from '@mui/material';
 export default function Add() {
-    const url = "http://localhost:8000/list.php";
+    const geturl = "https://unstinting-ray.000webhostapp.com/get.php";
+    const posturl = "https://unstinting-ray.000webhostapp.com/post.php";
     const navigate = useNavigate();
     function Validate() {
-        setPleaseadd(null)
-        setPleaseformat(null)
-        setChangesku(null)
-        setData(null)
+        setPleaseadd(null);
+        setPleaseformat(null);
+        setChangesku(null);
+        setData(null);
         function checkifnum(num) {
             if (num !== "" && /^\d+$/.test(num) === false) {
                 return true
@@ -24,22 +25,22 @@ export default function Add() {
         }
         else {
             for (let i = 0; i < data.length; i++) {
-                if (data[i].sku === sku) {
+                if (data[i].sku.toLowerCase() === sku.toLowerCase()) {
                     setChangesku(true)
                     break;
                 }
                 else if (i + 1 === data.length) {
-                    setChangesku(false);
+                    setChangesku(false)
                 }
             }
         }
-        if ((sku === "" || name === "" || price === "") || (type === "dvd" && mb === "") || (type === 'book' && weight === "") || ((type === 'furniture') && (height === '' || width === "" || length === ""))) {
+        if ((sku === "" || name === "" || price === "") || (type === "dvd" && size === "") || (type === 'book' && weight === "") || ((type === 'furniture') && (height === '' || width === "" || length === ""))) {
             setPleaseadd(true)
         }
         else {
             setPleaseadd(false)
         }
-        if (Boolean(sku.match(/^[A-Za-z0-9]*$/)) === false || checkifnum(price) || checkifnum(height) || checkifnum(width) || checkifnum(length) || checkifnum(weight) || checkifnum(mb)) {
+        if (Boolean(sku.match(/^[A-Za-z0-9]*$/)) === false || checkifnum(price) || checkifnum(height) || checkifnum(width) || checkifnum(length) || checkifnum(weight) || checkifnum(size)) {
             setPleaseformat(true)
         }
         else {
@@ -47,22 +48,22 @@ export default function Add() {
         }
         return false;
     }
-    const [sku, setSku] = useState("")
-    const [name, setName] = useState("")
-    const [price, setPrice] = useState("")
-    const [pleaseadd, setPleaseadd] = useState(null)
-    const [type, setType] = useState("dvd")
-    const [mb, setMb] = useState("")
-    const [height, setHeight] = useState("")
-    const [width, setWidth] = useState("")
-    const [length, setLength] = useState("")
-    const [weight, setWeight] = useState("")
+    const [sku, setSku] = useState("");
+    const [name, setName] = useState("");
+    const [price, setPrice] = useState("");
+    const [pleaseadd, setPleaseadd] = useState(null);
+    const [type, setType] = useState("dvd");
+    const [size, setSize] = useState("");
+    const [height, setHeight] = useState("");
+    const [width, setWidth] = useState("");
+    const [length, setLength] = useState("");
+    const [weight, setWeight] = useState("");
     const [pleaseformat, setPleaseformat] = useState(null)
     const [data, setData] = useState("");
     const [changesku, setChangesku] = useState(null);
     async function FetchAPI() {
-        const res = await axios.get(url);
-        setData(res.data)
+        const res = await axios.get(geturl);
+        setData(res.data);
         return false
     };
     useEffect(() => {
@@ -70,13 +71,13 @@ export default function Add() {
     },
         [data === null])
     useEffect(() => {
-        setPleaseadd(null)
-        setPleaseformat(null)
-        setChangesku(null)
-        setMb("")
-        setHeight("")
-        setWidth("")
-        setLength("")
+        setPleaseadd(null);
+        setPleaseformat(null);
+        setChangesku(null);
+        setSize("");
+        setHeight("");
+        setWidth("");
+        setLength("");
         setWeight("")
     }, [type])
     useEffect(() => {
@@ -86,12 +87,12 @@ export default function Add() {
             form.append('sku', sku);
             form.append('name', name);
             form.append('price', price);
-            form.append('size', mb);
+            form.append('size', size);
             form.append('height', height);
             form.append('width', width);
             form.append('length', length);
             form.append('weight', weight);
-            axios.post(url, form)
+            axios.post(posturl, form);
             navigate(`/`)
         }
     }, [pleaseadd, pleaseformat, changesku])
@@ -110,37 +111,32 @@ export default function Add() {
                     <div id="inputs">
                         <div className="input">
                             SKU
-                            <TextField onChange={(e) => setSku(e.target.value)} maxLength="10" id="sku" label="SKU" variant="outlined" />
+                            <TextField inputProps={{ maxLength: 10 }} onChange={(e) => setSku(e.target.value)} id="sku" label="SKU" variant="outlined" />
                         </div>
                         <div className="input">
                             Name
-                            <TextField onChange={(e) => setName(e.target.value)} maxLength="20" id="name" label="Name" variant="outlined" />
+                            <TextField inputProps={{ maxLength: 29 }} onChange={(e) => setName(e.target.value)} id="name" label="Name" variant="outlined" />
                         </div>
                         <div className="input">
                             Price($)
-                            <TextField onChange={(e) => setPrice(e.target.value)} maxLength="10" id="price" label="Price" variant="outlined" />
+                            <TextField inputProps={{ maxLength: 10 }} onChange={(e) => setPrice(e.target.value)} maxLength="10" id="price" label="Price" variant="outlined" />
                         </div>
                     </div>
                 </div>
                 <br></br>
-                <TextField onChange={(e) => setType(e.target.value)}
-                    id="standard-select-currency"
-                    select
-                    label="Type"
-                    defaultValue={"dvd"}
-                    helperText="Please select the type of your product"
-                    variant="standard"
-                >
-                    <MenuItem value={'dvd'}>
-                        DVD
-                    </MenuItem>
-                    <MenuItem value={'book'}>
-                        Book
-                    </MenuItem>
-                    <MenuItem value={'furniture'}>
-                        Furniture
-                    </MenuItem>
-                </TextField>
+                <FormControl style={{ minWidth: 180 }}>
+                    <NativeSelect onChange={(e) => setType(e.target.value)}
+                        defaultValue={"DVD"}
+                        inputProps={{
+                            name: 'Type',
+                            id: 'productType',
+                        }}
+                    >
+                        <option value={'dvd'}>DVD</option>
+                        <option value={'book'}>Book</option>
+                        <option value={'furniture'}>Furniture</option>
+                    </NativeSelect>
+                </FormControl>
                 <br></br>
                 <br></br>
                 <div id="typeinput">
@@ -148,7 +144,7 @@ export default function Add() {
                         <div id="DVD">
                             <div className="input">
                                 Size(MB)
-                                <TextField onChange={(e) => setMb(e.target.value)} id="size" label="Size" variant="outlined" />
+                                <TextField inputProps={{ maxLength: 18 }} onChange={(e) => setSize(e.target.value)} id="size" label="Size" variant="outlined" />
                             </div>
                         </div>
                     }
@@ -157,15 +153,15 @@ export default function Add() {
                             <div id="inputs">
                                 <div className="input">
                                     Height
-                                    <TextField onChange={(e) => setHeight(e.target.value)} maxLength="10" id="sku" label="SKU" variant="outlined" />
+                                    <TextField inputProps={{ maxLength: 3 }} onChange={(e) => setHeight(e.target.value)} maxLength="10" id="height" label="Height" variant="outlined" />
                                 </div>
                                 <div className="input">
                                     Width
-                                    <TextField onChange={(e) => setWidth(e.target.value)} maxLength="20" id="name" label="Name" variant="outlined" />
+                                    <TextField inputProps={{ maxLength: 3 }} onChange={(e) => setWidth(e.target.value)} maxLength="20" id="width" label="Width" variant="outlined" />
                                 </div>
                                 <div className="input">
                                     Length
-                                    <TextField onChange={(e) => setLength(e.target.value)} maxLength="10" id="price" label="Price" variant="outlined" />
+                                    <TextField inputProps={{ maxLength: 3 }} onChange={(e) => setLength(e.target.value)} maxLength="10" id="length" label="Length" variant="outlined" />
                                 </div>
                             </div>
                         </div>
@@ -174,7 +170,7 @@ export default function Add() {
                         <div id="Book">
                             <div className="input">
                                 Weight(KG)
-                                <TextField onChange={(e) => setWeight(e.target.value)} id="weight" label="Weight" variant="outlined" />
+                                <TextField inputProps={{ maxLength: 18 }} onChange={(e) => setWeight(e.target.value)} id="weight" label="Weight" variant="outlined" />
                             </div>
                         </div>
                     }
