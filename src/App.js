@@ -25,11 +25,6 @@ function App() {
       <Routes>
         <Route index element={<Home />} />
         <Route path="/add-product" element={<Add />} />
-        {/* <Route path="/Openmanga/:mangaid" element={<Openmanga />} />
-        <Route path="/Genres" element={<Categories />} />
-        <Route path="/:mangaid/:chapterid" element={<Chapter />} />
-        <Route path="genre/:genreid" element={<Genremanga />} />
-        <Route path="/About" element={<About />} /> */}
       </Routes>
     </div>
   );
