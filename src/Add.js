@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import axios from "axios";
 import TextField from '@mui/material/TextField';
 import { MenuItem, Button, NativeSelect, FormControl } from '@mui/material';
@@ -103,6 +103,7 @@ export default function Add() {
                 <div id="addremove">
                     {/* <Link to={'/add-product'}>ADD</Link> */}
                     <Button onClick={Validate} variant="outlined">Save</Button>
+                    <Link to={'/'}><Button variant="outlined">Cancel</Button></Link>
                 </div>
             </div>
             <hr></hr>
