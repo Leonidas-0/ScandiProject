@@ -20,7 +20,7 @@ export default function Add() {
                 return false
             }
         }
-        if (data.length === 0) {
+        if (!data.length) {
             setChangesku(false)
         }
         else {
