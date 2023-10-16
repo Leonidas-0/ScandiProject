@@ -1,7 +1,17 @@
 <?php
+class Database
+{
+    private $connection;
 
-$servername = "localhost";
-$username = "id20992612_levan";
-$password = "Levanscandi_51";
-$database = "id20992612_scandiback";
-$conn = new mysqli($servername, $username, $password, $database);
+    public function __construct($servername, $username, $password, $database)
+    {
+        $this->connection = new mysqli($servername, $username, $password, $database);
+    }
+
+    public function getConnection()
+    {
+        return $this->connection;
+    }
+}
+
+$db = new Database("localhost", "id20992612_levan", "Levanscandi_51", "id20992612_scandiback");

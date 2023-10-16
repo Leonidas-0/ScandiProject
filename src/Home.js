@@ -92,7 +92,7 @@ export default function Home() {
                                 }
                                 {product.weight &&
                                     <Typography variant="h5">
-                                        Weight: {product.weight}KG
+                                        Weight: {product.weight} KG
                                     </Typography>
                                 }
                             </CardContent>

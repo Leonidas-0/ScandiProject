@@ -34,7 +34,7 @@ export default function Add() {
                 }
             }
         }
-        if ((sku === "" || name === "" || price === "") || (type === "dvd" && size === "") || (type === 'book' && weight === "") || ((type === 'furniture') && (height === '' || width === "" || length === ""))) {
+        if ((sku === "" || name === "" || price === "") || (type === "DVD" && size === "") || (type === 'Book' && weight === "") || ((type === 'Furniture') && (height === "" || width === "" || length === ""))) {
             setPleaseadd(true)
         }
         else {
@@ -52,7 +52,7 @@ export default function Add() {
     const [name, setName] = useState("");
     const [price, setPrice] = useState("");
     const [pleaseadd, setPleaseadd] = useState(null);
-    const [type, setType] = useState("dvd");
+    const [type, setType] = useState("DVD");
     const [size, setSize] = useState("");
     const [height, setHeight] = useState("");
     const [width, setWidth] = useState("");
@@ -87,11 +87,12 @@ export default function Add() {
             form.append('sku', sku);
             form.append('name', name);
             form.append('price', price);
+            form.append('type', type);
             form.append('size', size);
-            form.append('height', height);
-            form.append('width', width);
-            form.append('length', length);
             form.append('weight', weight);
+            form.append('width', width);
+            form.append('height', height);
+            form.append('length', length);
             axios.post(posturl, form);
             navigate(`/`)
         }
@@ -133,15 +134,15 @@ export default function Add() {
                             id: 'productType',
                         }}
                     >
-                        <option value={'dvd'}>DVD</option>
-                        <option value={'book'}>Book</option>
-                        <option value={'furniture'}>Furniture</option>
+                        <option value={'DVD'}>DVD</option>
+                        <option value={'Book'}>Book</option>
+                        <option value={'Furniture'}>Furniture</option>
                     </NativeSelect>
                 </FormControl>
                 <br></br>
                 <br></br>
                 <div id="typeinput">
-                    {type === "dvd" &&
+                    {type === "DVD" &&
                         <div id="DVD">
                             <div className="input">
                                 Size(MB)
@@ -149,7 +150,7 @@ export default function Add() {
                             </div>
                         </div>
                     }
-                    {type === "furniture" &&
+                    {type === "Furniture" &&
                         <div id="Furniture">
                             <div id="inputs">
                                 <div className="input">
@@ -167,7 +168,7 @@ export default function Add() {
                             </div>
                         </div>
                     }
-                    {type === "book" &&
+                    {type === "Book" &&
                         <div id="Book">
                             <div className="input">
                                 Weight(KG)

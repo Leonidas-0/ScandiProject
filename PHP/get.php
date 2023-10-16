@@ -1,20 +1,37 @@
 <?php
 header('Access-Control-Allow-Origin: *');
 header("Access-Control-Allow-Methods: GET");
-include 'db.php';
+require_once 'db.php';
 
-$query = "SELECT * FROM dvds INNER JOIN baseinfos ON dvds.sku=baseinfos.sku;";
-$query .= "SELECT * FROM furnitures INNER JOIN baseinfos ON furnitures.sku=baseinfos.sku;";
-$query .= "SELECT * FROM books INNER JOIN baseinfos ON books.sku=baseinfos.sku;";
-$data = [];
-if ($conn->multi_query($query)) {
-  do {
-    if ($result = $conn->store_result()) {
-      while ($row = $result->fetch_assoc()) {
-        $data[] = $row;
+class DataFetcher
+{
+  private $db;
+
+  public function __construct(Database $db)
+  {
+    $this->db = $db;
+  }
+
+  public function fetchData()
+  {
+    $conn = $this->db->getConnection();
+    $data = [];
+
+    $tables = ['dvds', 'furnitures', 'books'];
+    foreach ($tables as $table) {
+      $query = "SELECT * FROM $table INNER JOIN baseinfos ON $table.sku=baseinfos.sku;";
+      if ($result = $conn->query($query)) {
+        while ($row = $result->fetch_assoc()) {
+          $data[] = $row;
+        }
+        $result->free();
       }
-      $result->free_result();
     }
-  } while ($conn->next_result());
+
+    return $data;
+  }
 }
+
+$fetcher = new DataFetcher($db);
+$data = $fetcher->fetchData();
 echo json_encode($data);
