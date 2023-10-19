@@ -37,7 +37,8 @@ export default function Home() {
     const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
     const geturl = "https://unstinting-ray.000webhostapp.com/get.php";
     const deleteurl = "https://unstinting-ray.000webhostapp.com/delete.php";
-
+    // const geturl = "http://localhost:8000/get.php";
+    // const deleteurl = "http://localhost:8000/delete.php";
     async function FetchAPI() {
         setData(null)
         const res = await axios.get(geturl);

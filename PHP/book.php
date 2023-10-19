@@ -1,7 +1,7 @@
 <?php
-require_once 'BaseProduct.php';
+require_once 'product.php';
 
-class Book extends Baseinfo
+class Book extends Product
 {
     private $weight;
 

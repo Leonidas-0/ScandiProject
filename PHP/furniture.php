@@ -1,7 +1,7 @@
 <?php
-require_once 'BaseProduct.php';
+require_once 'product.php';
 
-class Furniture extends Baseinfo
+class Furniture extends Product
 {
     private $dimensions;
 

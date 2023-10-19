@@ -1,5 +1,5 @@
 <?php
-abstract class Baseinfo
+abstract class Product
 {
     protected $sku;
     protected $name;
@@ -25,9 +25,6 @@ abstract class Baseinfo
     {
         $this->price = $price;
     }
-
-    abstract public function setUniqueAttribute($value);
-
     public function save()
     {
         $conn = $this->db->getConnection();

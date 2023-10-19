@@ -15,3 +15,4 @@ class Database
 }
 
 $db = new Database("localhost", "id20992612_levan", "Levanscandi_51", "id20992612_scandiback");
+// $db = new Database("localhost", "Levan", "", "commerce");

@@ -6,6 +6,8 @@ import { MenuItem, Button, NativeSelect, FormControl } from '@mui/material';
 export default function Add() {
     const geturl = "https://unstinting-ray.000webhostapp.com/get.php";
     const posturl = "https://unstinting-ray.000webhostapp.com/post.php";
+    // const geturl = "http://localhost:8000/get.php";
+    // const posturl = "http://localhost:8000/post.php";
     const navigate = useNavigate();
     function Validate() {
         setPleaseadd(null);

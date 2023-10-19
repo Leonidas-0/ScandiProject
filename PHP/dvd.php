@@ -1,7 +1,7 @@
 <?php
-require_once 'BaseProduct.php';
+require_once 'product.php';
 
-class DVD extends Baseinfo
+class DVD extends Product
 {
     private $size;
 
